@@ -1,23 +1,32 @@
 import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import PageAdmin from './pages/PageAdmin';
+import PageUser from './pages/PageUser';
 
 function App() {
+
+  const [role, setRole] = useState()
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo')
+
+    const userInfoToObj = JSON.parse(userInfo)
+
+    if (userInfoToObj.role === 'ADMIN') {
+      setRole("ADMIN")
+    } else {
+      setRole("USER")
+    }
+  }, [])
+
+  if (role === undefined) {
+    return "Cargando..."
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {role === "ADMIN" ? <PageAdmin/>  : <PageUser/>}
     </div>
   );
 }
