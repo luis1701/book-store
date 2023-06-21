@@ -20,12 +20,18 @@ function App() {
     }
   }, [])
 
+  const onLogout = () => {
+    localStorage.removeItem('userInfo')
+    window.location.reload()
+  }
+
   if (role === undefined) {
     return "Cargando..."
   }
 
   return (
     <div className="App">
+      <button onClick={() => onLogout()}>Logout</button>
       {role === "ADMIN" ? <PageAdmin/>  : <PageUser/>}
     </div>
   );
