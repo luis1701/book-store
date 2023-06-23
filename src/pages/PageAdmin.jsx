@@ -52,9 +52,9 @@ function PageAdmin(params) {
     setBooks(booksUpdated)
   }
 
-  const filterBooks = () => {
+  const filterBooks = (category) => {
     return books.filter((book) => {
-      return book.name.includes(searchText) || book.author.includes(searchText)
+      return (book.name.includes(searchText) || book.author.includes(searchText)) && book.category === category
     })
   }
 
@@ -82,21 +82,32 @@ function PageAdmin(params) {
       <div>
         <input placeholder="Buscador..." type="text" onChange={(e) => setSearchText(e.target.value)} />
       </div>
-      <div style={{display:"flex", gap: "10px", background: "cornsilk", padding: "20px"}}>
-        {filterBooks().map((book) => {
+      {
+        categories.map((category) => {
           return (
-            <div style={{background: 'grey', width: "300px", borderRadius: "20px"}} key={book.name}>
-              <p>Name: {book.name}</p>
-              <p>Author: {book.author}</p>
-              <p>Category: {book.category}</p>
-              <br/>
-              <button onClick={() => removeBook(book.name)}>
-                Delete
-              </button>
+            <div key={category}>
+              <div>
+                <h1>{category}</h1>
+              </div>
+              <div style={{display:"flex", gap: "10px", background: "cornsilk", padding: "20px"}}>
+                {filterBooks(category).length > 0 ? filterBooks(category).map((book) => {
+                  return (
+                    <div style={{background: 'grey', width: "300px", borderRadius: "20px"}} key={book.name}>
+                      <p>Name: {book.name}</p>
+                      <p>Author: {book.author}</p>
+                      <p>Category: {book.category}</p>
+                      <br/>
+                      <button onClick={() => removeBook(book.name)}>
+                        Delete
+                      </button>
+                    </div>
+                  )
+                }) : "No se obtuvo resultados"}
+              </div>
             </div>
           )
-        })}
-      </div>
+        })
+      }
     </div>
   )
 }
