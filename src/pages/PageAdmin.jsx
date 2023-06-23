@@ -4,6 +4,7 @@ const categories = ["DRAMA", "TERROR", "COMMEDY", "DOCUMENTALS"]
 
 function PageAdmin(params) {
   const [books, setBooks] = useState([])
+  const [searchText, setSearchText] = useState("")
   const [newBook, setNewBook] = useState({
     name: '',
     author: '',
@@ -26,7 +27,35 @@ function PageAdmin(params) {
   }, [books])
 
   const saveBook = () => {
+    const existBook = books.find((book) => book.name === newBook.name)
+    if (existBook) {
+      resetForm()
+      alert("El libro ya se registro")
+      return
+    }
     setBooks([...books, newBook])
+    resetForm()
+  }
+
+  const resetForm = () => {
+    setNewBook({
+      name: '',
+      author: '',
+      category: 'DRAMA',
+      calification: 0,
+      comments: []
+    })
+  }
+
+  const removeBook = (bookName) => {
+    const booksUpdated = books.filter((book) => book.name !== bookName)
+    setBooks(booksUpdated)
+  }
+
+  const filterBooks = () => {
+    return books.filter((book) => {
+      return book.name.includes(searchText) || book.author.includes(searchText)
+    })
   }
 
   return (
@@ -42,19 +71,28 @@ function PageAdmin(params) {
       <select value={newBook.category} onChange={(e) => setNewBook({...newBook, category: e.target.value})}>
         {categories.map((value) => {
           return (
-            <option value={value}>{value}</option>
+            <option key={value} value={value}>{value}</option>
           )
         })}
       </select>
-      <button onClick={() => saveBook()}>Agregar libro</button>
+      <button disabled={newBook.name === "" || newBook.author === ""} onClick={() => saveBook()}>Agregar libro</button>
+      <br />
+      <br />
+      <br />
       <div>
-        {books.map((book) => {
+        <input placeholder="Buscador..." type="text" onChange={(e) => setSearchText(e.target.value)} />
+      </div>
+      <div style={{display:"flex", gap: "10px", background: "cornsilk", padding: "20px"}}>
+        {filterBooks().map((book) => {
           return (
-            <div>
+            <div style={{background: 'grey', width: "300px", borderRadius: "20px"}} key={book.name}>
               <p>Name: {book.name}</p>
               <p>Author: {book.author}</p>
               <p>Category: {book.category}</p>
               <br/>
+              <button onClick={() => removeBook(book.name)}>
+                Delete
+              </button>
             </div>
           )
         })}
