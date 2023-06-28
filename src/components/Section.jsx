@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
+import Book from "./Book"
 
 
 function Section(props) {
   const [searchText, setSearchText] = useState("")
-  const {books, categories, removeBook} = props
+  const {books, categories, removeBook, addBookToMyList, checkBookAsReaded} = props
   const [role, setRole] = useState()
 
   useEffect(() => {
@@ -33,15 +34,7 @@ function Section(props) {
               <div style={{display:"flex", gap: "10px", background: "cornsilk", padding: "20px"}}>
                 {filterBooks(category).length > 0 ? filterBooks(category).map((book) => {
                   return (
-                    <div style={{background: 'grey', width: "300px", borderRadius: "20px"}} key={book.name}>
-                      <p>Name: {book.name}</p>
-                      <p>Author: {book.author}</p>
-                      <p>Category: {book.category}</p>
-                      <br/>
-                      {role === "ADMIN" && <button onClick={() => removeBook(book.name)}>
-                        Delete
-                      </button>}
-                    </div>
+                    <Book role={role} book={book} removeBook={removeBook} addBookToMyList={addBookToMyList} checkBookAsReaded={checkBookAsReaded}/>
                   )
                 }) : "No se obtuvo resultados"}
               </div>
