@@ -9,7 +9,7 @@ function PageAdmin(params) {
     name: '',
     author: '',
     category: 'DRAMA',
-    calification: 0,
+    calification: [], // [3,5,2,4]
     comments: []
   })
 
@@ -42,7 +42,7 @@ function PageAdmin(params) {
       name: '',
       author: '',
       category: 'DRAMA',
-      calification: 0,
+      calification: [],
       comments: []
     })
   }

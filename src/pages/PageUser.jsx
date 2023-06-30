@@ -6,6 +6,7 @@ const categories = ["DRAMA", "TERROR", "COMMEDY", "DOCUMENTALS"]
 function PageUser(params) {
   const [books, setBooks] = useState([])
   const [myBooks, setMyBooks] = useState([])
+  const [userName, setUserName] = useState("")
 
   useEffect(() => {
     const books = localStorage.getItem('books')
@@ -16,6 +17,11 @@ function PageUser(params) {
     if (myBooks) {
       setMyBooks(JSON.parse(myBooks))
     }
+    const userInfo = localStorage.getItem('userInfo')
+    if (userInfo) {
+      const { name } = JSON.parse(userInfo)
+      setUserName(name)
+    }
   }, [])
 
   useEffect(() => {
@@ -23,6 +29,12 @@ function PageUser(params) {
       localStorage.setItem('myBooks', JSON.stringify(myBooks))
     }
   }, [myBooks])
+
+  useEffect(() => {
+    if (books.length > 0) {
+      localStorage.setItem('books', JSON.stringify(books))
+    }
+  }, [books])
 
   const addBookToMyList = (bookToAdd) => {
     const existBookInMyList = myBooks.find((book) => book.name === bookToAdd.name)
@@ -44,12 +56,34 @@ function PageUser(params) {
     setMyBooks([...otherBooks, existBookInMyList])
   }
 
+  const addComment = (book, comment) => {
+    const existBookInStore = books.find((bookStore) => bookStore.name === book.name)
+
+    if (!existBookInStore) {
+      alert("El libro no existe")
+      return
+    }
+
+    const newComment = {
+      author: userName,
+      date: new Date().toDateString(),
+      comment
+    }
+
+    existBookInStore.comments = [...existBookInStore.comments, newComment]
+
+    const otherBooks = books.filter(bookFromStore => bookFromStore.name !== book.name)
+
+    setBooks([...otherBooks, existBookInStore])
+
+  }
+
   
   return (
     <div style={{display: 'flex', flexDirection: 'row', gap: '10px', padding: '20px', justifyContent: 'space-between'}}>
       <div>
         <h1>Biblioteca</h1>
-        <Section categories={categories} books={books} addBookToMyList={addBookToMyList}/>
+        <Section categories={categories} books={books} addBookToMyList={addBookToMyList} addComment={addComment}/>
       </div>
       <div>
         <h1>Mis libros</h1>

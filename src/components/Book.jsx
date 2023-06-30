@@ -1,5 +1,38 @@
+import { useState } from "react"
+
 function Book(props) {
-  const {role, book, removeBook, addBookToMyList, checkBookAsReaded} = props
+  const {role, book, removeBook, addBookToMyList, checkBookAsReaded, addComment} = props
+
+  const [comment, setComment] = useState("")
+
+  const printComments = () => {
+    return (
+      book.comments.map((comment) => {
+        return (
+          <div>
+            <p>Author: {comment.author}</p>
+            <p>Comentario: {comment.comment}</p>
+            <p>Fecha: {comment.date}</p>
+          </div>
+        )
+      })
+    )
+  }
+
+  const commentsComponent = () => {
+    return (
+      <div style={{ margin: '16px' }}>
+        <input value={comment} type="text" placeholder="Ingresa un comentario" onChange={(e) => setComment(e.target.value)} />
+        <button onClick={() => {
+          addComment(book, comment)
+          setComment("")
+        }}>Add comment</button>
+        <div style={{ margin: '16px', padding: '16px', background: 'white', borderRadius: '4px' }}>
+          {book.comments && book.comments.length > 0 ? printComments() : 'Sin Comentarios'}
+        </div>
+      </div>
+    )
+  }
 
   const getActions = () => {
     switch (role) {
@@ -16,6 +49,7 @@ function Book(props) {
               Add book to my list
             </button> : ''}
             {checkBookAsReaded && book.readed === false ? <button onClick={() => checkBookAsReaded(book)}>Check book as readed</button> : ''}
+            {addBookToMyList && commentsComponent()}
           </div>
         )
       default:
