@@ -78,12 +78,47 @@ function PageUser(params) {
 
   }
 
+  const addCalification = (book, calification) => {
+    const findBook = books.find(bookFromStore => bookFromStore.name === book.name)
+
+    console.log(findBook)
+
+    if (!findBook) {
+      alert('El libro no existe')
+      return
+    }
+
+    if (typeof findBook.calification === 'number') {
+      findBook.calification = []
+    }
+
+    const newCalification = {
+      calification: calification,
+      user: userName
+    }
+
+    const findCalification = findBook.calification.find((calificationValue) => calificationValue?.user === userName)
+
+
+    if (findCalification) {
+      // TODO update calification
+      return
+    }
+
+    findBook.calification = [...findBook.calification, newCalification]
+
+    const otherBooks = books.filter(bookFromStore => bookFromStore.name !== book.name)
+
+    setBooks([...otherBooks, findBook])
+
+  }
+
   
   return (
     <div style={{display: 'flex', flexDirection: 'row', gap: '10px', padding: '20px', justifyContent: 'space-between'}}>
       <div>
         <h1>Biblioteca</h1>
-        <Section categories={categories} books={books} addBookToMyList={addBookToMyList} addComment={addComment}/>
+        <Section categories={categories} books={books} addBookToMyList={addBookToMyList} addComment={addComment} addCalification={addCalification}/>
       </div>
       <div>
         <h1>Mis libros</h1>

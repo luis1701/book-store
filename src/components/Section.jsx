@@ -4,7 +4,7 @@ import Book from "./Book"
 
 function Section(props) {
   const [searchText, setSearchText] = useState("")
-  const {books, categories, removeBook, addBookToMyList, checkBookAsReaded, addComment} = props
+  const {books, categories, removeBook, addBookToMyList, checkBookAsReaded, addComment, addCalification} = props
   const [role, setRole] = useState()
 
   useEffect(() => {
@@ -32,9 +32,9 @@ function Section(props) {
                 <h1>{category}</h1>
               </div>
               <div style={{display:"flex", gap: "10px", background: "cornsilk", padding: "20px"}}>
-                {filterBooks(category).length > 0 ? filterBooks(category).map((book) => {
+                {filterBooks(category).length > 0 ? filterBooks(category).map((book, index) => {
                   return (
-                    <Book role={role} book={book} removeBook={removeBook} addBookToMyList={addBookToMyList} checkBookAsReaded={checkBookAsReaded} addComment={addComment}/>
+                    <Book key={index} role={role} book={book} removeBook={removeBook} addBookToMyList={addBookToMyList} checkBookAsReaded={checkBookAsReaded} addComment={addComment} addCalification={addCalification}/>
                   )
                 }) : "No se obtuvo resultados"}
               </div>
