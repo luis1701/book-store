@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import Section from "../components/Section"
+import { getAll, update } from "../services/BooksServices"
 
-const categories = ["DRAMA", "TERROR", "COMMEDY", "DOCUMENTALS"]
+const categories = ["DRAMA", "TERROR", "COMEDY", "DOCUMENTALS"]
 
 function PageUser(params) {
   const [books, setBooks] = useState([])
@@ -9,10 +10,7 @@ function PageUser(params) {
   const [userName, setUserName] = useState("")
 
   useEffect(() => {
-    const books = localStorage.getItem('books')
-    if (books) {
-      setBooks(JSON.parse(books))
-    }
+    reloadBooksData()
     const myBooks = localStorage.getItem('myBooks')
     if (myBooks) {
       setMyBooks(JSON.parse(myBooks))
@@ -24,17 +22,22 @@ function PageUser(params) {
     }
   }, [])
 
+  const reloadBooksData = () => {
+    getAll()
+      .then((result) => {
+        console.log(result)
+        setBooks(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
     if (myBooks.length > 0) {
       localStorage.setItem('myBooks', JSON.stringify(myBooks))
     }
   }, [myBooks])
-
-  useEffect(() => {
-    if (books.length > 0) {
-      localStorage.setItem('books', JSON.stringify(books))
-    }
-  }, [books])
 
   const addBookToMyList = (bookToAdd) => {
     const existBookInMyList = myBooks.find((book) => book.name === bookToAdd.name)
@@ -56,7 +59,7 @@ function PageUser(params) {
     setMyBooks([...otherBooks, existBookInMyList])
   }
 
-  const addComment = (book, comment) => {
+  const addComment = async (book, comment) => {
     const existBookInStore = books.find((bookStore) => bookStore.name === book.name)
 
     if (!existBookInStore) {
@@ -72,13 +75,11 @@ function PageUser(params) {
 
     existBookInStore.comments = [...existBookInStore.comments, newComment]
 
-    const otherBooks = books.filter(bookFromStore => bookFromStore.name !== book.name)
-
-    setBooks([...otherBooks, existBookInStore])
-
+    await update(existBookInStore._id, { comments: existBookInStore.comments })
+    await reloadBooksData()
   }
 
-  const addCalification = (book, calification) => {
+  const addCalification = async (book, calification) => {
     const findBook = books.find(bookFromStore => bookFromStore.name === book.name)
 
     console.log(findBook)
@@ -93,7 +94,7 @@ function PageUser(params) {
     }
 
     const newCalification = {
-      calification: calification,
+      calification: Number(calification),
       user: userName
     }
 
@@ -101,15 +102,17 @@ function PageUser(params) {
 
 
     if (findCalification) {
-      // TODO update calification
+      const otherCalifications = findBook.calification.filter((calification) => calification.user !== userName)
+      findBook.calification = [...otherCalifications, newCalification]
+      
+      await update(findBook._id, { calification: findBook.calification })
+      await reloadBooksData()
       return
     }
 
     findBook.calification = [...findBook.calification, newCalification]
-
-    const otherBooks = books.filter(bookFromStore => bookFromStore.name !== book.name)
-
-    setBooks([...otherBooks, findBook])
+    await update(findBook._id, { calification: findBook.calification })
+    await reloadBooksData()
 
   }
 

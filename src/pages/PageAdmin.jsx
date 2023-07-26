@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
 import Section from "../components/Section"
+import { getAll, create, remove } from "../services/BooksServices"
 
-const categories = ["DRAMA", "TERROR", "COMMEDY", "DOCUMENTALS"]
+
+const categories = ["DRAMA", "TERROR", "COMEDY", "DOCUMENTALS"]
 
 function PageAdmin(params) {
   const [books, setBooks] = useState([])
@@ -14,27 +16,30 @@ function PageAdmin(params) {
   })
 
   useEffect(() => {
-    const books = localStorage.getItem('books')
-    if (books) {
-      setBooks(JSON.parse(books))
-    }
+    reloadData()
   }, [])
 
-  useEffect(() => {
-    if (books.length > 0) {
-      localStorage.setItem('books', JSON.stringify(books))
-    }
-  }, [books])
+  const reloadData = () => {
+    getAll()
+      .then((result) => {
+        console.log(result)
+        setBooks(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
-  const saveBook = () => {
+  const saveBook = async () => {
     const existBook = books.find((book) => book.name === newBook.name)
     if (existBook) {
       resetForm()
       alert("El libro ya se registro")
       return
     }
-    setBooks([...books, newBook])
+    await create(newBook)
     resetForm()
+    await reloadData()
   }
 
   const resetForm = () => {
@@ -47,9 +52,9 @@ function PageAdmin(params) {
     })
   }
 
-  const removeBook = (bookName) => {
-    const booksUpdated = books.filter((book) => book.name !== bookName)
-    setBooks(booksUpdated)
+  const removeBook = async (bookId) => {
+    await remove(bookId)
+    await reloadData()
   }
 
   return (

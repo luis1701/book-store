@@ -39,7 +39,7 @@ function Book(props) {
     switch (role) {
       case 'ADMIN':
         return (
-          removeBook ? <button onClick={() => removeBook(book.name)}>
+          removeBook ? <button onClick={() => removeBook(book._id)}>
             Delete
           </button> : ''
         )
